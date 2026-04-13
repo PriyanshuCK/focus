@@ -1,0 +1,923 @@
+<!DOCTYPE html<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Focus — Pomodoro Timer</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500&family=Fraunces:ital,opsz,wght@0,9..144,300;0,9..144,400;1,9..144,300&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ── */
+:root {
+  --bg:          #F5F2EC;
+  --bg-card:     #FDFAF5;
+  --bg-elevated: #FFFFFF;
+  --bg-subtle:   #EDE9E0;
+  --border:      rgba(60,50,30,0.12);
+  --border-med:  rgba(60,50,30,0.20);
+  --text-1:      #1A1612;
+  --text-2:      #5C5248;
+  --text-3:      #9B9088;
+  --accent:      #2D5BE3;
+  --accent-dim:  rgba(45,91,227,0.12);
+  --accent-text: #1A3DA8;
+  --green:       #1E7B4B;
+  --green-dim:   rgba(30,123,75,0.12);
+  --ring-bg:     rgba(60,50,30,0.08);
+  --ring-work:   #2D5BE3;
+  --ring-break:  #1E7B4B;
+  --shadow:      0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
+  --shadow-lg:   0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+  --radius:      14px;
+  --radius-sm:   8px;
+  --transition:  all 0.25s cubic-bezier(0.4,0,0.2,1);
+}
+[data-theme="dark"] {
+  --bg:          #141210;
+  --bg-card:     #1C1917;
+  --bg-elevated: #242019;
+  --bg-subtle:   #2A2520;
+  --border:      rgba(255,245,220,0.08);
+  --border-med:  rgba(255,245,220,0.14);
+  --text-1:      #F0EBE0;
+  --text-2:      #A09080;
+  --text-3:      #605850;
+  --accent:      #5B82F5;
+  --accent-dim:  rgba(91,130,245,0.14);
+  --accent-text: #8FACF8;
+  --green:       #3DB872;
+  --green-dim:   rgba(61,184,114,0.14);
+  --ring-bg:     rgba(255,245,220,0.06);
+  --ring-work:   #5B82F5;
+  --ring-break:  #3DB872;
+  --shadow:      0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
+  --shadow-lg:   0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.3);
+}
+
+/* ── RESET ── */
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+html { font-size: 16px; }
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--bg);
+  color: var(--text-1);
+  min-height: 100vh;
+  transition: background 0.3s ease, color 0.3s ease;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ── LAYOUT ── */
+.app {
+  min-height: 100vh;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-template-rows: auto 1fr;
+  max-width: 1080px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  gap: 0 2.5rem;
+}
+
+/* ── HEADER ── */
+header {
+  grid-column: 1 / -1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1.75rem 0 1.25rem;
+  border-bottom: 1px solid var(--border);
+  margin-bottom: 2rem;
+}
+.wordmark {
+  font-family: 'Fraunces', serif;
+  font-size: 1.25rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-1);
+  letter-spacing: -0.01em;
+}
+.wordmark span {
+  color: var(--text-3);
+  font-style: normal;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  font-weight: 400;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  vertical-align: middle;
+  margin-left: 0.5rem;
+}
+.theme-toggle {
+  width: 40px; height: 40px;
+  border-radius: 50%;
+  border: 1px solid var(--border-med);
+  background: var(--bg-elevated);
+  cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+  color: var(--text-2);
+}
+.theme-toggle:hover { background: var(--bg-subtle); transform: scale(1.05); }
+.theme-toggle svg { width: 16px; height: 16px; }
+
+/* ── LEFT COLUMN — TIMER ── */
+.timer-col {
+  grid-column: 1;
+  padding-bottom: 2.5rem;
+}
+.phase-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  font-weight: 500;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 20px;
+  margin-bottom: 2rem;
+  transition: var(--transition);
+}
+.phase-chip.work  { background: var(--accent-dim); color: var(--accent-text); }
+.phase-chip.brk   { background: var(--green-dim);  color: var(--green); }
+.phase-chip .dot  { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.phase-chip .dot.pulse { animation: pulse 2s ease-in-out infinite; }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.75)} }
+
+/* ── RING ── */
+.ring-wrap {
+  position: relative;
+  width: 240px; height: 240px;
+  margin: 0 auto 2rem;
+}
+.ring-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
+.ring-track { fill: none; stroke: var(--ring-bg); stroke-width: 6; }
+.ring-progress {
+  fill: none; stroke-width: 6;
+  stroke-linecap: round;
+  transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
+}
+.ring-center {
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+}
+.timer-digits {
+  font-family: 'DM Mono', monospace;
+  font-size: 3.25rem;
+  font-weight: 300;
+  letter-spacing: -0.02em;
+  color: var(--text-1);
+  line-height: 1;
+  transition: color 0.3s ease;
+}
+.timer-sub {
+  font-size: 0.7rem;
+  color: var(--text-3);
+  letter-spacing: 0.06em;
+  margin-top: 6px;
+  font-family: 'DM Mono', monospace;
+  text-transform: uppercase;
+}
+
+/* ── TASK INPUT ── */
+.task-wrap {
+  margin-bottom: 1.25rem;
+  position: relative;
+}
+.task-icon {
+  position: absolute;
+  left: 14px; top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-3);
+  width: 14px; height: 14px;
+}
+.task-input {
+  width: 100%;
+  padding: 12px 14px 12px 38px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem;
+  color: var(--text-1);
+  outline: none;
+  transition: var(--transition);
+  box-shadow: var(--shadow);
+}
+.task-input::placeholder { color: var(--text-3); }
+.task-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow); }
+.task-input:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── DURATION EDITORS ── */
+.duration-row {
+  display: flex; gap: 10px;
+  margin-bottom: 1.25rem;
+}
+.dur-block {
+  flex: 1;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 12px;
+  box-shadow: var(--shadow);
+  transition: var(--transition);
+}
+.dur-block:hover:not(.disabled) { border-color: var(--border-med); }
+.dur-block.disabled { opacity: 0.5; }
+.dur-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 4px;
+}
+.dur-input-row { display: flex; align-items: center; gap: 6px; }
+.dur-num {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.25rem;
+  font-weight: 400;
+  color: var(--text-1);
+  width: 48px;
+  border: none;
+  background: transparent;
+  outline: none;
+  text-align: left;
+  -moz-appearance: textfield;
+}
+.dur-num::-webkit-outer-spin-button,
+.dur-num::-webkit-inner-spin-button { -webkit-appearance: none; }
+.dur-num:disabled { opacity: 0.7; cursor: not-allowed; }
+.dur-unit { font-size: 0.7rem; color: var(--text-3); }
+.dur-btns { display: flex; gap: 3px; margin-left: auto; }
+.dur-btn {
+  width: 22px; height: 22px;
+  border-radius: 4px;
+  border: 1px solid var(--border);
+  background: var(--bg-subtle);
+  color: var(--text-2);
+  cursor: pointer;
+  font-size: 0.9rem;
+  display: flex; align-items: center; justify-content: center;
+  line-height: 1;
+  transition: var(--transition);
+}
+.dur-btn:hover:not(:disabled) { background: var(--border-med); color: var(--text-1); }
+.dur-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+/* ── MAIN CONTROLS ── */
+.controls-row {
+  display: flex; gap: 8px; margin-bottom: 1rem;
+}
+.btn {
+  font-family: 'DM Sans', sans-serif;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  padding: 10px 20px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border-med);
+  background: var(--bg-elevated);
+  color: var(--text-1);
+  cursor: pointer;
+  transition: var(--transition);
+  letter-spacing: 0.01em;
+  box-shadow: var(--shadow);
+}
+.btn:hover { background: var(--bg-subtle); }
+.btn:active { transform: scale(0.98); }
+.btn.primary {
+  background: var(--accent);
+  color: #fff;
+  border-color: var(--accent);
+}
+.btn.primary:hover { opacity: 0.9; }
+.btn.ghost {
+  background: transparent;
+  border-color: var(--border);
+  color: var(--text-2);
+  box-shadow: none;
+}
+.btn.ghost:hover { color: var(--text-1); background: var(--bg-subtle); }
+
+/* ── EXTEND ── */
+.extend-row {
+  display: flex; gap: 6px; align-items: center;
+}
+.extend-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-right: 2px;
+}
+.extend-btn {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.7rem;
+  padding: 5px 10px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border);
+  background: var(--bg-elevated);
+  color: var(--text-2);
+  cursor: pointer;
+  transition: var(--transition);
+}
+.extend-btn:hover { background: var(--bg-subtle); color: var(--text-1); border-color: var(--border-med); }
+.extend-btn:active { transform: scale(0.97); }
+
+/* ── RIGHT COLUMN — LOG ── */
+.log-col {
+  grid-column: 2;
+  padding-bottom: 2.5rem;
+}
+.log-header {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+.log-title {
+  font-family: 'Fraunces', serif;
+  font-size: 1.125rem;
+  font-weight: 300;
+  font-style: italic;
+  color: var(--text-1);
+}
+.log-clear {
+  font-size: 0.75rem;
+  color: var(--text-3);
+  background: none;
+  border: none;
+  cursor: pointer;
+  font-family: 'DM Mono', monospace;
+  letter-spacing: 0.05em;
+  transition: color 0.2s;
+}
+.log-clear:hover { color: var(--text-2); }
+
+/* ── SUMMARY CARDS ── */
+.summary-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1fr;
+  gap: 8px;
+  margin-bottom: 1.25rem;
+}
+.s-card {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 12px 14px;
+  box-shadow: var(--shadow);
+}
+.s-label {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--text-3);
+  margin-bottom: 6px;
+}
+.s-val {
+  font-family: 'DM Mono', monospace;
+  font-size: 1.35rem;
+  font-weight: 400;
+  color: var(--text-1);
+  line-height: 1;
+}
+.s-val.accent { color: var(--accent); }
+.s-val.green  { color: var(--green); }
+
+/* ── SESSION LOG ── */
+.log-list {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  max-height: calc(100vh - 360px);
+  overflow-y: auto;
+  padding-right: 2px;
+}
+.log-list::-webkit-scrollbar { width: 3px; }
+.log-list::-webkit-scrollbar-track { background: transparent; }
+.log-list::-webkit-scrollbar-thumb { background: var(--border-med); border-radius: 2px; }
+.log-empty {
+  text-align: center;
+  padding: 3rem 1rem;
+  color: var(--text-3);
+  font-size: 0.8125rem;
+  line-height: 1.6;
+  border: 1px dashed var(--border);
+  border-radius: var(--radius);
+}
+.log-empty .icon { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
+.log-item {
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  gap: 10px;
+  align-items: center;
+  box-shadow: var(--shadow);
+  animation: slideIn 0.2s ease-out;
+  transition: border-color 0.2s;
+}
+.log-item:hover { border-color: var(--border-med); }
+@keyframes slideIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: translateY(0); } }
+.li-chip {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem;
+  font-weight: 500;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  padding: 3px 7px;
+  border-radius: 4px;
+}
+.li-chip.work  { background: var(--accent-dim); color: var(--accent-text); }
+.li-chip.brk   { background: var(--green-dim);  color: var(--green); }
+.li-name {
+  font-size: 0.8125rem;
+  color: var(--text-1);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.li-time {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.65rem;
+  color: var(--text-3);
+  margin-top: 2px;
+}
+.li-right { text-align: right; }
+.li-dur {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.75rem;
+  color: var(--text-2);
+}
+
+/* ── RESPONSIVE ── */
+@media (max-width: 680px) {
+  .app { grid-template-columns: 1fr; gap: 0; }
+  .timer-col, .log-col { grid-column: 1; }
+  .log-list { max-height: 300px; }
+  .ring-wrap { width: 200px; height: 200px; }
+  .timer-digits { font-size: 2.75rem; }
+}
+
+/* ── HIDDEN ── */
+.hidden { display: none !important; }
+</style>
+</head>
+<body>
+<div class="app">
+
+  <!-- HEADER -->
+  <header>
+    <div class="wordmark">
+      Focus
+      <span>Pomodoro</span>
+    </div>
+    <button class="theme-toggle" id="theme-btn" title="Toggle theme" onclick="toggleTheme()">
+      <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+        <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+        <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+        <line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/>
+      </svg>
+      <svg id="icon-moon" class="hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/>
+      </svg>
+    </button>
+  </header>
+
+  <!-- LEFT — TIMER -->
+  <div class="timer-col">
+    <div class="phase-chip work" id="phase-chip">
+      <span class="dot" id="phase-dot"></span>
+      <span id="phase-label">Work</span>
+    </div>
+
+    <!-- Ring -->
+    <div class="ring-wrap">
+      <svg class="ring-svg" viewBox="0 0 240 240">
+        <circle class="ring-track" cx="120" cy="120" r="108"/>
+        <circle class="ring-progress" id="ring" cx="120" cy="120" r="108"
+          stroke-dasharray="678.6" stroke-dashoffset="0" stroke="var(--ring-work)"/>
+      </svg>
+      <div class="ring-center">
+        <div class="timer-digits" id="timer-display">30:00</div>
+        <div class="timer-sub" id="timer-sub">ready</div>
+      </div>
+    </div>
+
+    <!-- Task -->
+    <div class="task-wrap">
+      <svg class="task-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
+        <line x1="8" y1="18" x2="21" y2="18"/>
+        <polyline points="3 6 4 7 6 5"/><polyline points="3 12 4 13 6 11"/><polyline points="3 18 4 19 6 17"/>
+      </svg>
+      <input class="task-input" id="task-input" type="text" placeholder="What are you working on?">
+    </div>
+
+    <!-- Duration editors -->
+    <div class="duration-row">
+      <div class="dur-block" id="work-block">
+        <div class="dur-label">Work</div>
+        <div class="dur-input-row">
+          <input class="dur-num" id="work-min" type="number" value="30" min="1" max="120">
+          <span class="dur-unit">min</span>
+          <div class="dur-btns">
+            <button class="dur-btn" id="work-dec" onclick="adjustDur('work',-5)">−</button>
+            <button class="dur-btn" id="work-inc" onclick="adjustDur('work',+5)">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="dur-block" id="break-block">
+        <div class="dur-label">Break</div>
+        <div class="dur-input-row">
+          <input class="dur-num" id="break-min" type="number" value="5" min="1" max="60">
+          <span class="dur-unit">min</span>
+          <div class="dur-btns">
+            <button class="dur-btn" id="break-dec" onclick="adjustDur('break',-1)">−</button>
+            <button class="dur-btn" id="break-inc" onclick="adjustDur('break',+1)">+</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div class="controls-row">
+      <button class="btn primary" id="start-btn" onclick="handleStart()">Start</button>
+      <button class="btn hidden" id="pause-btn" onclick="handlePause()">Pause</button>
+      <button class="btn hidden" id="resume-btn" onclick="handleResume()">Resume</button>
+      <button class="btn ghost" id="reset-btn" onclick="handleReset()">Reset</button>
+      <button class="btn hidden" id="skip-btn" onclick="handleSkip()" style="margin-left:auto">Skip →</button>
+    </div>
+
+    <!-- Extend -->
+    <div class="extend-row hidden" id="extend-row">
+      <span class="extend-label">Extend</span>
+      <button class="extend-btn" onclick="extendTimer(5)">+5</button>
+      <button class="extend-btn" onclick="extendTimer(10)">+10</button>
+      <button class="extend-btn" onclick="extendTimer(15)">+15</button>
+    </div>
+  </div>
+
+  <!-- RIGHT — LOG -->
+  <div class="log-col">
+    <div class="log-header">
+      <span class="log-title">Today's sessions</span>
+      <button class="log-clear" onclick="clearLog()">clear all</button>
+    </div>
+
+    <!-- Summary -->
+    <div class="summary-grid">
+      <div class="s-card">
+        <div class="s-label">Focus</div>
+        <div class="s-val accent" id="sum-focus">0m</div>
+      </div>
+      <div class="s-card">
+        <div class="s-label">Sessions</div>
+        <div class="s-val" id="sum-count">0</div>
+      </div>
+      <div class="s-card">
+        <div class="s-label">Breaks</div>
+        <div class="s-val green" id="sum-breaks">0</div>
+      </div>
+    </div>
+
+    <!-- Log list -->
+    <div class="log-list" id="log-list">
+      <div class="log-empty">
+        <span class="icon">◎</span>
+        Start your first session.<br>Your focus history will appear here.
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- FOOTER -->
+<footer style="grid-column:1/-1;text-align:center;padding:1.25rem 0 2rem;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;color:var(--text-3);">
+  Vibe-coded with Claude Sonnet 4.6 for personal use
+</footer>
+
+<!-- AUDIO -->
+<script>
+// ── State ──
+let workMin  = 30;
+let breakMin = 5;
+let phase    = 'work'; // 'work' | 'break'
+let totalSec = workMin * 60;
+let remSec   = totalSec;
+let timer    = null;
+let running  = false;
+let paused   = false;
+let sessionStart = null;
+let sessions = [];
+
+const CIRCUM = 2 * Math.PI * 108; // 678.58
+
+// ── DOM ──
+const $  = id => document.getElementById(id);
+const display    = $('timer-display');
+const sub        = $('timer-sub');
+const ring       = $('ring');
+const phaseChip  = $('phase-chip');
+const phaseLabel = $('phase-label');
+const phaseDot   = $('phase-dot');
+const taskInput  = $('task-input');
+const workInput  = $('work-min');
+const breakInput = $('break-min');
+
+// ── Helpers ──
+function fmt(s) {
+  const m = Math.floor(s / 60);
+  const sec = s % 60;
+  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
+}
+function updateRing() {
+  const pct = remSec / totalSec;
+  ring.style.strokeDashoffset = CIRCUM * (1 - pct);
+  ring.style.stroke = phase === 'work' ? 'var(--ring-work)' : 'var(--ring-break)';
+}
+function updateDisplay() {
+  display.textContent = fmt(remSec);
+  updateRing();
+}
+function setPhaseUI() {
+  if (phase === 'work') {
+    phaseChip.className = 'phase-chip work';
+    phaseLabel.textContent = 'Work';
+    ring.style.stroke = 'var(--ring-work)';
+  } else {
+    phaseChip.className = 'phase-chip break';
+    phaseLabel.textContent = 'Break';
+    ring.style.stroke = 'var(--ring-break)';
+  }
+}
+function lockSettings(lock) {
+  workInput.disabled  = lock;
+  breakInput.disabled = lock;
+  taskInput.disabled  = lock;
+  ['work-dec','work-inc','break-dec','break-inc'].forEach(id => $( id ).disabled = lock);
+  $('work-block').classList.toggle('disabled', lock);
+  $('break-block').classList.toggle('disabled', lock);
+}
+function showBtn(...ids) {
+  ['start-btn','pause-btn','resume-btn','skip-btn'].forEach(id => $(id).classList.add('hidden'));
+  ids.forEach(id => $(id).classList.remove('hidden'));
+}
+
+// ── Beep ──
+function beep() {
+  try {
+    const ctx = new (window.AudioContext || window.webkitAudioContext)();
+    const times = [0, 0.35, 0.7];
+    times.forEach(t => {
+      const o = ctx.createOscillator();
+      const g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination);
+      o.type = 'sine';
+      o.frequency.value = phase === 'work' ? 880 : 660;
+      g.gain.setValueAtTime(0, ctx.currentTime + t);
+      g.gain.linearRampToValueAtTime(0.3, ctx.currentTime + t + 0.05);
+      g.gain.linearRampToValueAtTime(0, ctx.currentTime + t + 0.28);
+      o.start(ctx.currentTime + t);
+      o.stop(ctx.currentTime + t + 0.3);
+    });
+  } catch(e) {}
+}
+
+// ── Notification ──
+function notify(title, body) {
+  if (Notification.permission === 'granted') {
+    new Notification(title, { body, icon: '' });
+  }
+}
+function requestNotif() {
+  if ('Notification' in window && Notification.permission === 'default') {
+    Notification.requestPermission();
+  }
+}
+
+// ── Timer tick ──
+function tick() {
+  remSec--;
+  updateDisplay();
+  if (remSec <= 0) {
+    clearInterval(timer);
+    running = false;
+    onPhaseEnd();
+  }
+}
+function onPhaseEnd() {
+  beep();
+  logSession();
+  const nextPhase = phase === 'work' ? 'break' : 'work';
+  notify(
+    nextPhase === 'break' ? '✓ Work session done!' : '✓ Break over!',
+    nextPhase === 'break' ? 'Time to take a break.' : 'Ready to focus again?'
+  );
+  switchPhase(nextPhase);
+  sub.textContent = 'done — start next?';
+  showBtn('start-btn','skip-btn');
+  $('extend-row').classList.add('hidden');
+  phaseDot.classList.remove('pulse');
+  lockSettings(false);
+}
+
+// ── Phase switch ──
+function switchPhase(p) {
+  phase = p;
+  totalSec = (phase === 'work' ? parseInt(workInput.value) : parseInt(breakInput.value)) * 60;
+  remSec = totalSec;
+  setPhaseUI();
+  updateDisplay();
+}
+
+// ── Actions ──
+function handleStart() {
+  requestNotif();
+  if (!running && !paused) {
+    workMin  = parseInt(workInput.value)  || 30;
+    breakMin = parseInt(breakInput.value) || 5;
+    totalSec = (phase === 'work' ? workMin : breakMin) * 60;
+    remSec   = totalSec;
+    sessionStart = new Date();
+    updateDisplay();
+  }
+  running = true; paused = false;
+  timer = setInterval(tick, 1000);
+  sub.textContent = phase === 'work' ? 'focusing…' : 'resting…';
+  showBtn('pause-btn','skip-btn');
+  $('extend-row').classList.remove('hidden');
+  phaseDot.classList.add('pulse');
+  lockSettings(true);
+}
+function handlePause() {
+  clearInterval(timer);
+  running = false; paused = true;
+  sub.textContent = 'paused';
+  showBtn('resume-btn','skip-btn');
+  $('extend-row').classList.remove('hidden');
+  phaseDot.classList.remove('pulse');
+}
+function handleResume() {
+  running = true; paused = false;
+  timer = setInterval(tick, 1000);
+  sub.textContent = phase === 'work' ? 'focusing…' : 'resting…';
+  showBtn('pause-btn','skip-btn');
+  phaseDot.classList.add('pulse');
+}
+function handleReset() {
+  clearInterval(timer);
+  running = false; paused = false;
+  phase = 'work';
+  workInput.value  = workMin  || 30;
+  breakInput.value = breakMin || 5;
+  totalSec = parseInt(workInput.value) * 60;
+  remSec   = totalSec;
+  setPhaseUI();
+  updateDisplay();
+  sub.textContent = 'ready';
+  showBtn('start-btn');
+  $('extend-row').classList.add('hidden');
+  phaseDot.classList.remove('pulse');
+  lockSettings(false);
+}
+function handleSkip() {
+  clearInterval(timer);
+  running = false; paused = false;
+  const nextPhase = phase === 'work' ? 'break' : 'work';
+  switchPhase(nextPhase);
+  sub.textContent = 'ready';
+  showBtn('start-btn','skip-btn');
+  $('extend-row').classList.add('hidden');
+  phaseDot.classList.remove('pulse');
+  lockSettings(false);
+}
+function extendTimer(mins) {
+  remSec   += mins * 60;
+  totalSec += mins * 60;
+  updateDisplay();
+}
+function adjustDur(type, delta) {
+  const inp = type === 'work' ? workInput : breakInput;
+  const max = type === 'work' ? 120 : 60;
+  const val = Math.min(max, Math.max(1, (parseInt(inp.value) || 0) + delta));
+  inp.value = val;
+  if (!running && !paused) {
+    if ((type === 'work' && phase === 'work') || (type === 'break' && phase === 'break')) {
+      totalSec = val * 60; remSec = totalSec; updateDisplay();
+    }
+  }
+}
+
+// ── Input live sync ──
+workInput.addEventListener('input', () => {
+  if (!running && !paused && phase === 'work') {
+    const v = parseInt(workInput.value) || 30;
+    totalSec = v * 60; remSec = totalSec; updateDisplay();
+  }
+});
+breakInput.addEventListener('input', () => {
+  if (!running && !paused && phase === 'break') {
+    const v = parseInt(breakInput.value) || 5;
+    totalSec = v * 60; remSec = totalSec; updateDisplay();
+  }
+});
+
+// ── Log ──
+function logSession() {
+  const end   = new Date();
+  const start = sessionStart || end;
+  const dur   = Math.round((end - start) / 60000);
+  const label = taskInput.value.trim() || (phase === 'work' ? 'Focus session' : 'Break');
+  sessions.unshift({ phase, label, start, end, dur });
+  saveLog();
+  renderLog();
+}
+function renderLog() {
+  const list = $('log-list');
+  if (!sessions.length) {
+    list.innerHTML = `<div class="log-empty"><span class="icon">◎</span>Start your first session.<br>Your focus history will appear here.</div>`;
+    updateSummary(); return;
+  }
+  list.innerHTML = sessions.map(s => {
+    const chipClass = s.phase === 'work' ? 'work' : 'brk';
+    const chipTxt   = s.phase === 'work' ? 'Work' : 'Break';
+    const startFmt  = s.start.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const endFmt    = s.end.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    return `<div class="log-item">
+      <span class="li-chip ${chipClass}">${chipTxt}</span>
+      <div class="li-info">
+        <div class="li-name">${s.label}</div>
+        <div class="li-time">${startFmt} → ${endFmt}</div>
+      </div>
+      <div class="li-right">
+        <div class="li-dur">${s.dur}m</div>
+      </div>
+    </div>`;
+  }).join('');
+  updateSummary();
+}
+function updateSummary() {
+  const workSessions = sessions.filter(s => s.phase === 'work');
+  const totalFocus   = workSessions.reduce((a, s) => a + s.dur, 0);
+  const hrs = Math.floor(totalFocus / 60);
+  const min = totalFocus % 60;
+  $('sum-focus').textContent  = hrs > 0 ? `${hrs}h ${min}m` : `${min}m`;
+  $('sum-count').textContent  = workSessions.length;
+  $('sum-breaks').textContent = sessions.filter(s => s.phase === 'break').length;
+}
+function clearLog() {
+  sessions = []; saveLog(); renderLog();
+}
+function saveLog() {
+  try {
+    const today = new Date().toDateString();
+    const all   = JSON.parse(localStorage.getItem('focus-log') || '{}');
+    all[today]  = sessions.map(s => ({...s, start: s.start.toISOString(), end: s.end.toISOString()}));
+    localStorage.setItem('focus-log', JSON.stringify(all));
+  } catch(e) {}
+}
+function loadLog() {
+  try {
+    const today = new Date().toDateString();
+    const all   = JSON.parse(localStorage.getItem('focus-log') || '{}');
+    sessions = (all[today] || []).map(s => ({...s, start: new Date(s.start), end: new Date(s.end)}));
+    renderLog();
+  } catch(e) {}
+}
+
+// ── Theme ──
+function toggleTheme() {
+  const html = document.documentElement;
+  const dark = html.getAttribute('data-theme') === 'dark';
+  html.setAttribute('data-theme', dark ? 'light' : 'dark');
+  $('icon-sun').classList.toggle('hidden', !dark);
+  $('icon-moon').classList.toggle('hidden', dark);
+  try { localStorage.setItem('focus-theme', dark ? 'light' : 'dark'); } catch(e) {}
+}
+function initTheme() {
+  let theme = 'light';
+  try { theme = localStorage.getItem('focus-theme') || (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'); } catch(e) {}
+  document.documentElement.setAttribute('data-theme', theme);
+  $('icon-sun').classList.toggle('hidden', theme === 'dark');
+  $('icon-moon').classList.toggle('hidden', theme === 'light');
+}
+
+// ── Init ──
+initTheme();
+loadLog();
+updateDisplay();
+setPhaseUI();
+showBtn('start-btn');
+$('reset-btn').classList.remove('hidden');
+</script>
+</body>
+</html>
