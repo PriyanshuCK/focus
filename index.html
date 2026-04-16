@@ -1,4 +1,4 @@
-<!DOCTYPE html<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
@@ -11,48 +11,50 @@
 /* ── TOKENS ── */
 :root {
   --bg:          #F5F2EC;
-  --bg-card:     #FDFAF5;
   --bg-elevated: #FFFFFF;
   --bg-subtle:   #EDE9E0;
-  --border:      rgba(60,50,30,0.12);
+  --border:      rgba(60,50,30,0.11);
   --border-med:  rgba(60,50,30,0.20);
   --text-1:      #1A1612;
   --text-2:      #5C5248;
   --text-3:      #9B9088;
   --accent:      #2D5BE3;
-  --accent-dim:  rgba(45,91,227,0.12);
+  --accent-dim:  rgba(45,91,227,0.11);
   --accent-text: #1A3DA8;
   --green:       #1E7B4B;
-  --green-dim:   rgba(30,123,75,0.12);
-  --ring-bg:     rgba(60,50,30,0.08);
+  --green-dim:   rgba(30,123,75,0.11);
+  --amber:       #B45309;
+  --amber-dim:   rgba(180,83,9,0.11);
+  --ring-bg:     rgba(60,50,30,0.07);
   --ring-work:   #2D5BE3;
+  --ring-chore:  #B45309;
   --ring-break:  #1E7B4B;
-  --shadow:      0 1px 3px rgba(0,0,0,0.06), 0 4px 16px rgba(0,0,0,0.04);
-  --shadow-lg:   0 2px 8px rgba(0,0,0,0.08), 0 8px 32px rgba(0,0,0,0.06);
+  --shadow:      0 1px 2px rgba(0,0,0,0.05), 0 3px 12px rgba(0,0,0,0.04);
   --radius:      14px;
   --radius-sm:   8px;
-  --transition:  all 0.25s cubic-bezier(0.4,0,0.2,1);
+  --transition:  all 0.22s cubic-bezier(0.4,0,0.2,1);
 }
 [data-theme="dark"] {
   --bg:          #141210;
-  --bg-card:     #1C1917;
   --bg-elevated: #242019;
   --bg-subtle:   #2A2520;
   --border:      rgba(255,245,220,0.08);
-  --border-med:  rgba(255,245,220,0.14);
+  --border-med:  rgba(255,245,220,0.15);
   --text-1:      #F0EBE0;
   --text-2:      #A09080;
-  --text-3:      #605850;
+  --text-3:      #5A5048;
   --accent:      #5B82F5;
-  --accent-dim:  rgba(91,130,245,0.14);
+  --accent-dim:  rgba(91,130,245,0.13);
   --accent-text: #8FACF8;
   --green:       #3DB872;
-  --green-dim:   rgba(61,184,114,0.14);
+  --green-dim:   rgba(61,184,114,0.13);
+  --amber:       #F59E0B;
+  --amber-dim:   rgba(245,158,11,0.13);
   --ring-bg:     rgba(255,245,220,0.06);
   --ring-work:   #5B82F5;
+  --ring-chore:  #F59E0B;
   --ring-break:  #3DB872;
-  --shadow:      0 1px 3px rgba(0,0,0,0.3), 0 4px 16px rgba(0,0,0,0.2);
-  --shadow-lg:   0 2px 8px rgba(0,0,0,0.4), 0 8px 32px rgba(0,0,0,0.3);
+  --shadow:      0 1px 3px rgba(0,0,0,0.28), 0 4px 14px rgba(0,0,0,0.18);
 }
 
 /* ── RESET ── */
@@ -67,16 +69,16 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* ── LAYOUT ── */
+/* ── APP GRID ── */
 .app {
   min-height: 100vh;
   display: grid;
   grid-template-columns: 1fr 1fr;
-  grid-template-rows: auto 1fr;
-  max-width: 1080px;
+  grid-template-rows: auto 1fr auto;
+  max-width: 1100px;
   margin: 0 auto;
   padding: 0 1.5rem;
-  gap: 0 2.5rem;
+  gap: 0 3rem;
 }
 
 /* ── HEADER ── */
@@ -87,7 +89,7 @@ header {
   justify-content: space-between;
   padding: 1.75rem 0 1.25rem;
   border-bottom: 1px solid var(--border);
-  margin-bottom: 2rem;
+  margin-bottom: 2.25rem;
 }
 .wordmark {
   font-family: 'Fraunces', serif;
@@ -101,15 +103,14 @@ header {
   color: var(--text-3);
   font-style: normal;
   font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  font-weight: 400;
+  font-size: 0.68rem;
   letter-spacing: 0.1em;
   text-transform: uppercase;
   vertical-align: middle;
   margin-left: 0.5rem;
 }
 .theme-toggle {
-  width: 40px; height: 40px;
+  width: 38px; height: 38px;
   border-radius: 50%;
   border: 1px solid var(--border-med);
   background: var(--bg-elevated);
@@ -120,353 +121,226 @@ header {
   color: var(--text-2);
 }
 .theme-toggle:hover { background: var(--bg-subtle); transform: scale(1.05); }
-.theme-toggle svg { width: 16px; height: 16px; }
+.theme-toggle svg { width: 15px; height: 15px; }
 
-/* ── LEFT COLUMN — TIMER ── */
-.timer-col {
-  grid-column: 1;
-  padding-bottom: 2.5rem;
-}
+/* ── LEFT — TIMER ── */
+.timer-col { grid-column: 1; padding-bottom: 2.5rem; }
+
 .phase-chip {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
+  display: inline-flex; align-items: center; gap: 6px;
   font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  font-weight: 500;
-  letter-spacing: 0.12em;
-  text-transform: uppercase;
-  padding: 4px 10px;
-  border-radius: 20px;
-  margin-bottom: 2rem;
-  transition: var(--transition);
+  font-size: 0.63rem; font-weight: 500;
+  letter-spacing: 0.13em; text-transform: uppercase;
+  padding: 4px 10px; border-radius: 20px;
+  margin-bottom: 2rem; transition: var(--transition);
 }
 .phase-chip.work  { background: var(--accent-dim); color: var(--accent-text); }
 .phase-chip.brk   { background: var(--green-dim);  color: var(--green); }
-.phase-chip .dot  { width: 6px; height: 6px; border-radius: 50%; background: currentColor; }
+.phase-chip.chore { background: var(--amber-dim);  color: var(--amber); }
+.phase-chip .dot  { width: 5px; height: 5px; border-radius: 50%; background: currentColor; }
 .phase-chip .dot.pulse { animation: pulse 2s ease-in-out infinite; }
-@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.5;transform:scale(0.75)} }
+@keyframes pulse { 0%,100%{opacity:1;transform:scale(1)} 50%{opacity:0.45;transform:scale(0.7)} }
 
 /* ── RING ── */
 .ring-wrap {
-  position: relative;
-  width: 240px; height: 240px;
+  position: relative; width: 236px; height: 236px;
   margin: 0 auto 2rem;
 }
 .ring-svg { width: 100%; height: 100%; transform: rotate(-90deg); }
-.ring-track { fill: none; stroke: var(--ring-bg); stroke-width: 6; }
-.ring-progress {
-  fill: none; stroke-width: 6;
-  stroke-linecap: round;
-  transition: stroke-dashoffset 1s linear, stroke 0.5s ease;
-}
-.ring-center {
-  position: absolute; inset: 0;
-  display: flex; flex-direction: column;
-  align-items: center; justify-content: center;
-}
-.timer-digits {
-  font-family: 'DM Mono', monospace;
-  font-size: 3.25rem;
-  font-weight: 300;
-  letter-spacing: -0.02em;
-  color: var(--text-1);
-  line-height: 1;
-  transition: color 0.3s ease;
-}
-.timer-sub {
-  font-size: 0.7rem;
-  color: var(--text-3);
-  letter-spacing: 0.06em;
-  margin-top: 6px;
-  font-family: 'DM Mono', monospace;
-  text-transform: uppercase;
-}
+.ring-track { fill: none; stroke: var(--ring-bg); stroke-width: 5; }
+.ring-progress { fill: none; stroke-width: 5; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.4s ease; }
+.ring-wave-wrap { position: absolute; inset: 0; border-radius: 50%; pointer-events: none; opacity: 0; transition: opacity 0.5s ease; }
+.ring-wrap.active .ring-wave-wrap { opacity: 1; }
+.ring-wave { position: absolute; inset: 0; border-radius: 50%; border: 1px solid var(--wave-clr, var(--ring-work)); animation: ringWave 3s ease-out infinite; }
+.ring-wave:nth-child(2) { animation-delay: 1s; }
+.ring-wave:nth-child(3) { animation-delay: 2s; }
+@keyframes ringWave { 0% { transform:scale(0.9); opacity:0.5; } 100% { transform:scale(1.65); opacity:0; } }
+.ring-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+.timer-digits { font-family: 'DM Mono', monospace; font-size: 3.2rem; font-weight: 300; letter-spacing: -0.02em; color: var(--text-1); line-height: 1; }
+.timer-sub { font-size: 0.68rem; color: var(--text-3); letter-spacing: 0.07em; margin-top: 7px; font-family: 'DM Mono', monospace; text-transform: uppercase; }
 
 /* ── TASK INPUT ── */
-.task-wrap {
-  margin-bottom: 1.25rem;
-  position: relative;
-}
-.task-icon {
-  position: absolute;
-  left: 14px; top: 50%;
-  transform: translateY(-50%);
-  color: var(--text-3);
-  width: 14px; height: 14px;
-}
+.task-wrap { margin-bottom: 1rem; position: relative; }
+.task-icon { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); color: var(--text-3); width: 13px; height: 13px; }
 .task-input {
-  width: 100%;
-  padding: 12px 14px 12px 38px;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.875rem;
-  color: var(--text-1);
-  outline: none;
-  transition: var(--transition);
-  box-shadow: var(--shadow);
+  width: 100%; padding: 11px 13px 11px 36px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; color: var(--text-1); outline: none;
+  transition: var(--transition); box-shadow: var(--shadow);
 }
 .task-input::placeholder { color: var(--text-3); }
 .task-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow); }
 .task-input:disabled { opacity: 0.5; cursor: not-allowed; }
 
-/* ── DURATION EDITORS ── */
-.duration-row {
-  display: flex; gap: 10px;
-  margin-bottom: 1.25rem;
+/* ── TYPE / SUBTYPE ── */
+.type-row { display: flex; gap: 8px; margin-bottom: 1rem; }
+.type-select {
+  flex: 1; padding: 10px 28px 10px 12px;
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif;
+  font-size: 0.875rem; color: var(--text-1); outline: none;
+  transition: var(--transition); box-shadow: var(--shadow); cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' stroke='%239B9088' stroke-width='1.5' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat; background-position: right 10px center;
 }
-.dur-block {
-  flex: 1;
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 12px;
-  box-shadow: var(--shadow);
-  transition: var(--transition);
-}
+.type-select:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim), var(--shadow); }
+.type-select:disabled { opacity: 0.5; cursor: not-allowed; }
+
+/* ── DURATION ── */
+.duration-row { display: flex; gap: 8px; margin-bottom: 1.25rem; }
+.dur-block { flex: 1; background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 10px 12px; box-shadow: var(--shadow); transition: var(--transition); }
 .dur-block:hover:not(.disabled) { border-color: var(--border-med); }
 .dur-block.disabled { opacity: 0.5; }
-.dur-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin-bottom: 4px;
-}
-.dur-input-row { display: flex; align-items: center; gap: 6px; }
-.dur-num {
-  font-family: 'DM Mono', monospace;
-  font-size: 1.25rem;
-  font-weight: 400;
-  color: var(--text-1);
-  width: 48px;
-  border: none;
-  background: transparent;
-  outline: none;
-  text-align: left;
-  -moz-appearance: textfield;
-}
-.dur-num::-webkit-outer-spin-button,
-.dur-num::-webkit-inner-spin-button { -webkit-appearance: none; }
+.dur-label { font-family: 'DM Mono', monospace; font-size: 0.58rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 5px; }
+.dur-input-row { display: flex; align-items: center; gap: 5px; }
+.dur-num { font-family: 'DM Mono', monospace; font-size: 1.2rem; font-weight: 400; color: var(--text-1); width: 44px; border: none; background: transparent; outline: none; -moz-appearance: textfield; }
+.dur-num::-webkit-outer-spin-button, .dur-num::-webkit-inner-spin-button { -webkit-appearance: none; }
 .dur-num:disabled { opacity: 0.7; cursor: not-allowed; }
-.dur-unit { font-size: 0.7rem; color: var(--text-3); }
+.dur-unit { font-size: 0.68rem; color: var(--text-3); }
 .dur-btns { display: flex; gap: 3px; margin-left: auto; }
-.dur-btn {
-  width: 22px; height: 22px;
-  border-radius: 4px;
-  border: 1px solid var(--border);
-  background: var(--bg-subtle);
-  color: var(--text-2);
-  cursor: pointer;
-  font-size: 0.9rem;
-  display: flex; align-items: center; justify-content: center;
-  line-height: 1;
-  transition: var(--transition);
-}
+.dur-btn { width: 22px; height: 22px; border-radius: 4px; border: 1px solid var(--border); background: var(--bg-subtle); color: var(--text-2); cursor: pointer; font-size: 0.875rem; display: flex; align-items: center; justify-content: center; line-height: 1; transition: var(--transition); }
 .dur-btn:hover:not(:disabled) { background: var(--border-med); color: var(--text-1); }
 .dur-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-/* ── MAIN CONTROLS ── */
-.controls-row {
-  display: flex; gap: 8px; margin-bottom: 1rem;
-}
-.btn {
-  font-family: 'DM Sans', sans-serif;
-  font-size: 0.8125rem;
-  font-weight: 500;
-  padding: 10px 20px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border-med);
-  background: var(--bg-elevated);
-  color: var(--text-1);
-  cursor: pointer;
-  transition: var(--transition);
-  letter-spacing: 0.01em;
-  box-shadow: var(--shadow);
-}
+/* ── CONTROLS ── */
+.controls-row { display: flex; gap: 8px; margin-bottom: 1rem; flex-wrap: wrap; }
+.btn { font-family: 'DM Sans', sans-serif; font-size: 0.8125rem; font-weight: 500; padding: 9px 18px; border-radius: var(--radius-sm); border: 1px solid var(--border-med); background: var(--bg-elevated); color: var(--text-1); cursor: pointer; transition: var(--transition); letter-spacing: 0.01em; box-shadow: var(--shadow); }
 .btn:hover { background: var(--bg-subtle); }
 .btn:active { transform: scale(0.98); }
-.btn.primary {
-  background: var(--accent);
-  color: #fff;
-  border-color: var(--accent);
-}
+.btn.primary { background: var(--accent); color: #fff; border-color: var(--accent); }
 .btn.primary:hover { opacity: 0.9; }
-.btn.ghost {
-  background: transparent;
-  border-color: var(--border);
-  color: var(--text-2);
-  box-shadow: none;
-}
+.btn.ghost { background: transparent; border-color: var(--border); color: var(--text-2); box-shadow: none; }
 .btn.ghost:hover { color: var(--text-1); background: var(--bg-subtle); }
 
 /* ── EXTEND ── */
-.extend-row {
-  display: flex; gap: 6px; align-items: center;
-}
-.extend-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin-right: 2px;
-}
-.extend-btn {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.7rem;
-  padding: 5px 10px;
-  border-radius: var(--radius-sm);
-  border: 1px solid var(--border);
-  background: var(--bg-elevated);
-  color: var(--text-2);
-  cursor: pointer;
-  transition: var(--transition);
-}
+.extend-row { display: flex; gap: 6px; align-items: center; }
+.extend-label { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-right: 2px; }
+.extend-btn { font-family: 'DM Mono', monospace; font-size: 0.68rem; padding: 5px 10px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg-elevated); color: var(--text-2); cursor: pointer; transition: var(--transition); }
 .extend-btn:hover { background: var(--bg-subtle); color: var(--text-1); border-color: var(--border-med); }
 .extend-btn:active { transform: scale(0.97); }
 
-/* ── RIGHT COLUMN — LOG ── */
-.log-col {
-  grid-column: 2;
-  padding-bottom: 2.5rem;
-}
-.log-header {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  margin-bottom: 1rem;
-}
-.log-title {
-  font-family: 'Fraunces', serif;
-  font-size: 1.125rem;
-  font-weight: 300;
-  font-style: italic;
-  color: var(--text-1);
-}
-.log-clear {
-  font-size: 0.75rem;
-  color: var(--text-3);
-  background: none;
-  border: none;
-  cursor: pointer;
-  font-family: 'DM Mono', monospace;
-  letter-spacing: 0.05em;
-  transition: color 0.2s;
-}
-.log-clear:hover { color: var(--text-2); }
+/* ══════════════════════════════════
+   RIGHT — LOG (redesigned)
+   ══════════════════════════════════ */
+.log-col { grid-column: 2; padding-bottom: 2.5rem; }
 
-/* ── SUMMARY CARDS ── */
-.summary-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr 1fr;
-  gap: 8px;
-  margin-bottom: 1.25rem;
-}
-.s-card {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 12px 14px;
-  box-shadow: var(--shadow);
-}
-.s-label {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  letter-spacing: 0.1em;
-  text-transform: uppercase;
-  color: var(--text-3);
-  margin-bottom: 6px;
-}
-.s-val {
-  font-family: 'DM Mono', monospace;
-  font-size: 1.35rem;
-  font-weight: 400;
-  color: var(--text-1);
-  line-height: 1;
-}
-.s-val.accent { color: var(--accent); }
-.s-val.green  { color: var(--green); }
+.log-header { display: flex; align-items: baseline; justify-content: space-between; margin-bottom: 1.25rem; }
+.log-title { font-family: 'Fraunces', serif; font-size: 1.1rem; font-weight: 300; font-style: italic; color: var(--text-1); }
+.log-actions { display: flex; gap: 1rem; }
+.log-action-btn { font-family: 'DM Mono', monospace; font-size: 0.62rem; letter-spacing: 0.07em; color: var(--text-3); background: none; border: none; cursor: pointer; transition: color 0.18s; padding: 0; }
+.log-action-btn:hover { color: var(--text-2); }
 
-/* ── SESSION LOG ── */
-.log-list {
-  display: flex;
-  flex-direction: column;
-  gap: 6px;
-  max-height: calc(100vh - 360px);
-  overflow-y: auto;
-  padding-right: 2px;
+/* Focus summary cards — slightly larger */
+.focus-summary { display: grid; grid-template-columns: repeat(auto-fill, minmax(100px, 1fr)); gap: 8px; margin-bottom: 1.25rem; }
+.fs-card { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 14px 15px; box-shadow: var(--shadow); transition: border-color 0.18s; }
+.fs-card:hover { border-color: var(--border-med); }
+.fs-label { font-family: 'DM Mono', monospace; font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.fs-val { font-family: 'DM Mono', monospace; font-size: 1.5rem; font-weight: 400; line-height: 1; color: var(--accent); }
+
+/* Stats breakdown — card groups */
+.stats-block { margin-bottom: 1.25rem; display: flex; flex-direction: column; gap: 10px; }
+.stats-block:empty { display: none; }
+
+.sb-group { display: flex; flex-direction: column; gap: 6px; }
+.sb-group-header {
+  display: flex; align-items: center; gap: 8px;
+  margin-bottom: 2px;
 }
+.sb-group-type {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.6rem; letter-spacing: 0.1em; text-transform: uppercase;
+  color: var(--text-3);
+}
+.sb-group-divider {
+  flex: 1; height: 1px; background: var(--border);
+}
+.sb-group-total {
+  font-family: 'DM Mono', monospace;
+  font-size: 0.68rem; color: var(--text-2);
+}
+.sb-cards { display: grid; grid-template-columns: repeat(auto-fill, minmax(86px, 1fr)); gap: 6px; }
+.sb-card {
+  background: var(--bg-elevated); border: 1px solid var(--border);
+  border-radius: var(--radius-sm); padding: 10px 12px;
+  box-shadow: var(--shadow); transition: border-color 0.18s;
+}
+.sb-card:hover { border-color: var(--border-med); }
+.sb-card-label {
+  font-family: 'DM Mono', monospace; font-size: 0.58rem;
+  letter-spacing: 0.08em; text-transform: uppercase;
+  color: var(--text-3); margin-bottom: 6px;
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.sb-card-val {
+  font-family: 'DM Mono', monospace; font-size: 1.1rem;
+  font-weight: 400; line-height: 1; color: var(--text-1);
+  margin-bottom: 3px;
+}
+.sb-card-val.work-color  { color: var(--accent); }
+.sb-card-val.break-color { color: var(--green); }
+.sb-card-val.chore-color { color: var(--amber); }
+.sb-card-count {
+  font-family: 'DM Mono', monospace; font-size: 0.6rem;
+  color: var(--text-3);
+}
+
+/* Log section */
+.log-section-label { font-family: 'DM Mono', monospace; font-size: 0.57rem; letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); margin-bottom: 8px; }
+.log-list { display: flex; flex-direction: column; gap: 5px; max-height: calc(100vh - 390px); min-height: 80px; overflow-y: auto; padding-right: 2px; }
 .log-list::-webkit-scrollbar { width: 3px; }
 .log-list::-webkit-scrollbar-track { background: transparent; }
 .log-list::-webkit-scrollbar-thumb { background: var(--border-med); border-radius: 2px; }
-.log-empty {
-  text-align: center;
-  padding: 3rem 1rem;
-  color: var(--text-3);
-  font-size: 0.8125rem;
-  line-height: 1.6;
-  border: 1px dashed var(--border);
-  border-radius: var(--radius);
-}
-.log-empty .icon { font-size: 1.5rem; margin-bottom: 0.5rem; display: block; }
-.log-item {
-  background: var(--bg-elevated);
-  border: 1px solid var(--border);
-  border-radius: var(--radius-sm);
-  padding: 10px 14px;
-  display: grid;
-  grid-template-columns: auto 1fr auto;
-  gap: 10px;
-  align-items: center;
-  box-shadow: var(--shadow);
-  animation: slideIn 0.2s ease-out;
-  transition: border-color 0.2s;
-}
+
+.log-empty { text-align: center; padding: 2.5rem 1rem; color: var(--text-3); font-size: 0.78rem; line-height: 1.8; border: 1px dashed var(--border); border-radius: var(--radius-sm); font-family: 'DM Mono', monospace; }
+.log-empty .empty-icon { display: block; font-size: 1rem; margin-bottom: 0.5rem; opacity: 0.4; }
+
+/* Log item */
+.log-item { background: var(--bg-elevated); border: 1px solid var(--border); border-radius: var(--radius-sm); padding: 9px 13px; display: grid; grid-template-columns: auto 1fr auto; gap: 10px; align-items: center; box-shadow: var(--shadow); animation: slideIn 0.18s ease-out; transition: border-color 0.18s; }
 .log-item:hover { border-color: var(--border-med); }
-@keyframes slideIn { from { opacity:0; transform: translateY(-4px); } to { opacity:1; transform: translateY(0); } }
-.li-chip {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.6rem;
-  font-weight: 500;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
-  padding: 3px 7px;
-  border-radius: 4px;
-}
+.log-item.editing { display: flex; flex-direction: column; align-items: stretch; gap: 8px; padding: 11px 13px; }
+@keyframes slideIn { from { opacity:0; transform:translateY(-3px); } to { opacity:1; transform:translateY(0); } }
+
+.li-chip { font-family: 'DM Mono', monospace; font-size: 0.58rem; font-weight: 500; letter-spacing: 0.08em; text-transform: uppercase; padding: 3px 7px; border-radius: 4px; white-space: nowrap; align-self: flex-start; margin-top: 1px; }
 .li-chip.work  { background: var(--accent-dim); color: var(--accent-text); }
 .li-chip.brk   { background: var(--green-dim);  color: var(--green); }
-.li-name {
-  font-size: 0.8125rem;
-  color: var(--text-1);
-  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
-}
-.li-time {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.65rem;
-  color: var(--text-3);
-  margin-top: 2px;
-}
-.li-right { text-align: right; }
-.li-dur {
-  font-family: 'DM Mono', monospace;
-  font-size: 0.75rem;
-  color: var(--text-2);
-}
+.li-chip.chore { background: var(--amber-dim);  color: var(--amber); }
+
+.li-info { min-width: 0; }
+.li-name { font-size: 0.8125rem; color: var(--text-1); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; line-height: 1.3; }
+.li-meta { font-family: 'DM Mono', monospace; font-size: 0.62rem; color: var(--text-3); margin-top: 2px; display: flex; align-items: center; gap: 5px; }
+.li-meta-dot { opacity: 0.4; }
+
+.li-right { display: flex; align-items: center; gap: 7px; justify-content: flex-end; flex-shrink: 0; }
+.li-dur { font-family: 'DM Mono', monospace; font-size: 0.78rem; color: var(--text-2); white-space: nowrap; }
+.li-edit-btn { background: none; border: none; cursor: pointer; color: var(--text-3); font-size: 0.75rem; padding: 3px 5px; border-radius: 4px; transition: var(--transition); opacity: 0; line-height: 1; }
+.log-item:hover .li-edit-btn { opacity: 1; }
+.li-edit-btn:hover { color: var(--text-1); background: var(--bg-subtle); }
+
+/* Edit mode */
+.li-edit-row { display: flex; gap: 8px; }
+.li-edit-row .type-select { font-size: 0.8rem; padding: 7px 28px 7px 10px; box-shadow: none; }
+.li-edit-input { width: 100%; padding: 8px 11px; background: var(--bg); border: 1px solid var(--border); border-radius: var(--radius-sm); font-family: 'DM Sans', sans-serif; font-size: 0.875rem; color: var(--text-1); outline: none; transition: var(--transition); }
+.li-edit-input:focus { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-dim); }
+.li-edit-actions { display: flex; gap: 7px; }
+.li-edit-actions .btn { padding: 7px 14px; font-size: 0.78rem; box-shadow: none; }
+
+/* ── FOOTER ── */
+footer { grid-column: 1/-1; text-align: center; padding: 1.25rem 0 2rem; border-top: 1px solid var(--border); font-family: 'DM Mono', monospace; font-size: 0.63rem; letter-spacing: 0.06em; color: var(--text-3); }
+
+/* ── TOAST ── */
+.toast { position: fixed; bottom: 2rem; left: 50%; transform: translateX(-50%); background: var(--text-1); color: var(--bg); font-family: 'DM Mono', monospace; font-size: 0.72rem; letter-spacing: 0.06em; padding: 8px 18px; border-radius: 20px; opacity: 0; transition: opacity 0.2s ease; pointer-events: none; z-index: 100; }
+.toast.show { opacity: 1; }
 
 /* ── RESPONSIVE ── */
-@media (max-width: 680px) {
-  .app { grid-template-columns: 1fr; gap: 0; }
+@media (max-width: 700px) {
+  .app { grid-template-columns: 1fr; }
   .timer-col, .log-col { grid-column: 1; }
-  .log-list { max-height: 300px; }
   .ring-wrap { width: 200px; height: 200px; }
-  .timer-digits { font-size: 2.75rem; }
+  .timer-digits { font-size: 2.7rem; }
+  .log-list { max-height: 300px; }
 }
-
-/* ── HIDDEN ── */
 .hidden { display: none !important; }
 </style>
 </head>
@@ -475,10 +349,7 @@ header {
 
   <!-- HEADER -->
   <header>
-    <div class="wordmark">
-      Focus
-      <span>Pomodoro</span>
-    </div>
+    <div class="wordmark">Focus <span>Pomodoro</span></div>
     <button class="theme-toggle" id="theme-btn" title="Toggle theme" onclick="toggleTheme()">
       <svg id="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
         <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
@@ -496,11 +367,13 @@ header {
   <div class="timer-col">
     <div class="phase-chip work" id="phase-chip">
       <span class="dot" id="phase-dot"></span>
-      <span id="phase-label">Work</span>
+      <span id="phase-label">Focus</span>
     </div>
 
-    <!-- Ring -->
-    <div class="ring-wrap">
+    <div class="ring-wrap" id="ring-wrap">
+      <div class="ring-wave-wrap" id="ring-wave-wrap">
+        <div class="ring-wave"></div><div class="ring-wave"></div><div class="ring-wave"></div>
+      </div>
       <svg class="ring-svg" viewBox="0 0 240 240">
         <circle class="ring-track" cx="120" cy="120" r="108"/>
         <circle class="ring-progress" id="ring" cx="120" cy="120" r="108"
@@ -512,52 +385,44 @@ header {
       </div>
     </div>
 
-    <!-- Task -->
     <div class="task-wrap">
       <svg class="task-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/>
-        <line x1="8" y1="18" x2="21" y2="18"/>
+        <line x1="8" y1="6" x2="21" y2="6"/><line x1="8" y1="12" x2="21" y2="12"/><line x1="8" y1="18" x2="21" y2="18"/>
         <polyline points="3 6 4 7 6 5"/><polyline points="3 12 4 13 6 11"/><polyline points="3 18 4 19 6 17"/>
       </svg>
       <input class="task-input" id="task-input" type="text" placeholder="What are you working on?">
     </div>
 
-    <!-- Duration editors -->
+    <div class="type-row">
+      <select class="type-select" id="type-select" onchange="handleTypeChange()">
+        <option>Focus</option><option>Chore</option><option>Break</option>
+      </select>
+      <select class="type-select" id="subtype-select" onchange="handleSubtypeChange()"></select>
+    </div>
+
     <div class="duration-row">
-      <div class="dur-block" id="work-block">
-        <div class="dur-label">Work</div>
+      <div class="dur-block" id="dur-block">
+        <div class="dur-label" id="dur-label">Duration</div>
         <div class="dur-input-row">
-          <input class="dur-num" id="work-min" type="number" value="30" min="1" max="120">
+          <input class="dur-num" id="dur-input" type="number" value="30" min="1" max="120">
           <span class="dur-unit">min</span>
           <div class="dur-btns">
-            <button class="dur-btn" id="work-dec" onclick="adjustDur('work',-5)">−</button>
-            <button class="dur-btn" id="work-inc" onclick="adjustDur('work',+5)">+</button>
-          </div>
-        </div>
-      </div>
-      <div class="dur-block" id="break-block">
-        <div class="dur-label">Break</div>
-        <div class="dur-input-row">
-          <input class="dur-num" id="break-min" type="number" value="5" min="1" max="60">
-          <span class="dur-unit">min</span>
-          <div class="dur-btns">
-            <button class="dur-btn" id="break-dec" onclick="adjustDur('break',-1)">−</button>
-            <button class="dur-btn" id="break-inc" onclick="adjustDur('break',+1)">+</button>
+            <button class="dur-btn" id="dur-dec" onclick="adjustDur(-5)">−</button>
+            <button class="dur-btn" id="dur-inc" onclick="adjustDur(+5)">+</button>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- Controls -->
     <div class="controls-row">
       <button class="btn primary" id="start-btn" onclick="handleStart()">Start</button>
       <button class="btn hidden" id="pause-btn" onclick="handlePause()">Pause</button>
       <button class="btn hidden" id="resume-btn" onclick="handleResume()">Resume</button>
+      <button class="btn hidden" id="stop-btn" onclick="handleStop()">Stop & log</button>
       <button class="btn ghost" id="reset-btn" onclick="handleReset()">Reset</button>
       <button class="btn hidden" id="skip-btn" onclick="handleSkip()" style="margin-left:auto">Skip →</button>
     </div>
 
-    <!-- Extend -->
     <div class="extend-row hidden" id="extend-row">
       <span class="extend-label">Extend</span>
       <button class="extend-btn" onclick="extendTimer(5)">+5</button>
@@ -570,337 +435,383 @@ header {
   <div class="log-col">
     <div class="log-header">
       <span class="log-title">Today's sessions</span>
-      <button class="log-clear" onclick="clearLog()">clear all</button>
-    </div>
-
-    <!-- Summary -->
-    <div class="summary-grid">
-      <div class="s-card">
-        <div class="s-label">Focus</div>
-        <div class="s-val accent" id="sum-focus">0m</div>
-      </div>
-      <div class="s-card">
-        <div class="s-label">Sessions</div>
-        <div class="s-val" id="sum-count">0</div>
-      </div>
-      <div class="s-card">
-        <div class="s-label">Breaks</div>
-        <div class="s-val green" id="sum-breaks">0</div>
+      <div class="log-actions">
+        <button class="log-action-btn" onclick="copyMarkdown()">copy md</button>
+        <button class="log-action-btn" onclick="clearLog()">clear</button>
       </div>
     </div>
 
-    <!-- Log list -->
+    <div class="focus-summary" id="focus-summary"></div>
+    <div class="stats-block" id="stats-block"></div>
+
+    <div class="log-section-label" id="log-section-label" style="display:none">Log</div>
     <div class="log-list" id="log-list">
       <div class="log-empty">
-        <span class="icon">◎</span>
-        Start your first session.<br>Your focus history will appear here.
+        <span class="empty-icon">◎</span>
+        Start your first session.<br>History appears here.
       </div>
     </div>
   </div>
 
+  <footer>Vibe-coded with Claude Sonnet 4.6 for personal use</footer>
 </div>
 
-<!-- FOOTER -->
-<footer style="grid-column:1/-1;text-align:center;padding:1.25rem 0 2rem;border-top:1px solid var(--border);font-family:'DM Mono',monospace;font-size:0.65rem;letter-spacing:0.06em;color:var(--text-3);">
-  Vibe-coded with Claude Sonnet 4.6 for personal use
-</footer>
+<div class="toast hidden" id="toast"></div>
 
-<!-- AUDIO -->
 <script>
-// ── State ──
-let workMin  = 30;
-let breakMin = 5;
-let phase    = 'work'; // 'work' | 'break'
-let totalSec = workMin * 60;
-let remSec   = totalSec;
-let timer    = null;
-let running  = false;
-let paused   = false;
-let sessionStart = null;
-let sessions = [];
+const DEFAULT_SUBTYPES = {
+  Focus: ['DSA', 'Journal entry', 'Web dev', 'Office'],
+  Chore: ['Cooking'],
+  Break: ['Short', 'Long']
+};
+let subtypeMap = {}, sessionType = 'Focus', sessionSubtype = 'DSA';
+let prevWorkType = 'Focus', prevWorkSubtype = 'DSA', editingIndex = null;
+let workMin = 30, breakMin = 5, phase = 'work';
+let totalSec = workMin * 60, remSec = totalSec;
+let timer = null, running = false, paused = false;
+let sessionStart = null, pauseStarted = null, pausedMs = 0, sessions = [];
+const CIRCUM = 2 * Math.PI * 108;
 
-const CIRCUM = 2 * Math.PI * 108; // 678.58
+const $ = id => document.getElementById(id);
+const display = $('timer-display'), sub = $('timer-sub'), ring = $('ring');
+const phaseChip = $('phase-chip'), phaseLabel = $('phase-label'), phaseDot = $('phase-dot');
+const taskInput = $('task-input'), durInput = $('dur-input');
 
-// ── DOM ──
-const $  = id => document.getElementById(id);
-const display    = $('timer-display');
-const sub        = $('timer-sub');
-const ring       = $('ring');
-const phaseChip  = $('phase-chip');
-const phaseLabel = $('phase-label');
-const phaseDot   = $('phase-dot');
-const taskInput  = $('task-input');
-const workInput  = $('work-min');
-const breakInput = $('break-min');
-
-// ── Helpers ──
-function fmt(s) {
-  const m = Math.floor(s / 60);
-  const sec = s % 60;
-  return `${String(m).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-}
-function updateRing() {
-  const pct = remSec / totalSec;
-  ring.style.strokeDashoffset = CIRCUM * (1 - pct);
-  ring.style.stroke = phase === 'work' ? 'var(--ring-work)' : 'var(--ring-break)';
-}
-function updateDisplay() {
-  display.textContent = fmt(remSec);
-  updateRing();
-}
+function fmt(s) { return `${String(Math.floor(s/60)).padStart(2,'0')}:${String(s%60).padStart(2,'0')}`; }
+function fmtMin(m) { return m >= 60 ? `${Math.floor(m/60)}h ${m%60}m` : `${m}m`; }
+function updateRing() { ring.style.strokeDashoffset = CIRCUM * (1 - (totalSec > 0 ? remSec/totalSec : 0)); }
+function updateDisplay() { display.textContent = fmt(remSec); updateRing(); }
 function setPhaseUI() {
-  if (phase === 'work') {
-    phaseChip.className = 'phase-chip work';
-    phaseLabel.textContent = 'Work';
-    ring.style.stroke = 'var(--ring-work)';
-  } else {
-    phaseChip.className = 'phase-chip break';
-    phaseLabel.textContent = 'Break';
-    ring.style.stroke = 'var(--ring-break)';
-  }
+  const cc = sessionType === 'Focus' ? 'work' : sessionType === 'Chore' ? 'chore' : 'brk';
+  phaseChip.className = `phase-chip ${cc}`;
+  phaseLabel.textContent = (running || paused) ? `${sessionType} · ${sessionSubtype}` : sessionType;
+  const rc = sessionType === 'Focus' ? 'var(--ring-work)' : sessionType === 'Chore' ? 'var(--ring-chore)' : 'var(--ring-break)';
+  ring.style.stroke = rc;
+  $('ring-wave-wrap').style.setProperty('--wave-clr', rc);
 }
 function lockSettings(lock) {
-  workInput.disabled  = lock;
-  breakInput.disabled = lock;
-  taskInput.disabled  = lock;
-  ['work-dec','work-inc','break-dec','break-inc'].forEach(id => $( id ).disabled = lock);
-  $('work-block').classList.toggle('disabled', lock);
-  $('break-block').classList.toggle('disabled', lock);
+  [durInput, taskInput, $('type-select'), $('subtype-select')].forEach(el => el.disabled = lock);
+  ['dur-dec','dur-inc'].forEach(id => $(id).disabled = lock);
+  $('dur-block').classList.toggle('disabled', lock);
 }
 function showBtn(...ids) {
-  ['start-btn','pause-btn','resume-btn','skip-btn'].forEach(id => $(id).classList.add('hidden'));
+  ['start-btn','pause-btn','resume-btn','stop-btn','skip-btn'].forEach(id => $(id).classList.add('hidden'));
   ids.forEach(id => $(id).classList.remove('hidden'));
 }
 
-// ── Beep ──
+function initSubtypes() {
+  try {
+    const s = localStorage.getItem('focus-subtypes');
+    subtypeMap = s ? JSON.parse(s) : JSON.parse(JSON.stringify(DEFAULT_SUBTYPES));
+    if (!s) localStorage.setItem('focus-subtypes', JSON.stringify(subtypeMap));
+  } catch(e) { subtypeMap = JSON.parse(JSON.stringify(DEFAULT_SUBTYPES)); }
+}
+function populateSubtypes(type) {
+  const sel = $('subtype-select'); sel.innerHTML = '';
+  (subtypeMap[type] || []).forEach(st => { const o = document.createElement('option'); o.value = o.textContent = st; sel.appendChild(o); });
+  const a = document.createElement('option'); a.value = '__add__'; a.textContent = 'Add custom…'; sel.appendChild(a);
+}
+function handleTypeChange() {
+  sessionType = $('type-select').value; phase = sessionType === 'Break' ? 'break' : 'work';
+  populateSubtypes(sessionType); sessionSubtype = $('subtype-select').value; setPhaseUI();
+  // show the saved duration for this type
+  durInput.value = sessionType === 'Break' ? breakMin : workMin;
+  $('dur-label').textContent = sessionType === 'Break' ? 'Break' : sessionType === 'Focus' ? 'Focus' : 'Chore';
+  if (!running && !paused) { totalSec = parseInt(durInput.value) * 60; remSec = totalSec; updateDisplay(); }
+}
+function handleSubtypeChange() {
+  const val = $('subtype-select').value;
+  if (val === '__add__') {
+    const name = prompt('New subtype name:');
+    if (name && name.trim()) {
+      const t = name.trim();
+      if (!subtypeMap[sessionType].includes(t)) { subtypeMap[sessionType].push(t); try { localStorage.setItem('focus-subtypes', JSON.stringify(subtypeMap)); } catch(e){} }
+      populateSubtypes(sessionType); $('subtype-select').value = t; sessionSubtype = t;
+    } else { $('subtype-select').value = subtypeMap[sessionType][0] || ''; sessionSubtype = $('subtype-select').value; }
+  } else { sessionSubtype = val; }
+}
+
 function beep() {
   try {
     const ctx = new (window.AudioContext || window.webkitAudioContext)();
-    const times = [0, 0.35, 0.7];
-    times.forEach(t => {
-      const o = ctx.createOscillator();
-      const g = ctx.createGain();
-      o.connect(g); g.connect(ctx.destination);
-      o.type = 'sine';
+    [0, 0.35, 0.7].forEach(t => {
+      const o = ctx.createOscillator(), g = ctx.createGain();
+      o.connect(g); g.connect(ctx.destination); o.type = 'sine';
       o.frequency.value = phase === 'work' ? 880 : 660;
-      g.gain.setValueAtTime(0, ctx.currentTime + t);
-      g.gain.linearRampToValueAtTime(0.3, ctx.currentTime + t + 0.05);
-      g.gain.linearRampToValueAtTime(0, ctx.currentTime + t + 0.28);
-      o.start(ctx.currentTime + t);
-      o.stop(ctx.currentTime + t + 0.3);
+      g.gain.setValueAtTime(0, ctx.currentTime+t);
+      g.gain.linearRampToValueAtTime(0.28, ctx.currentTime+t+0.05);
+      g.gain.linearRampToValueAtTime(0, ctx.currentTime+t+0.28);
+      o.start(ctx.currentTime+t); o.stop(ctx.currentTime+t+0.3);
     });
   } catch(e) {}
 }
+function notify(title, body) { if (Notification.permission === 'granted') new Notification(title, { body }); }
+function requestNotif() { if ('Notification' in window && Notification.permission === 'default') Notification.requestPermission(); }
 
-// ── Notification ──
-function notify(title, body) {
-  if (Notification.permission === 'granted') {
-    new Notification(title, { body, icon: '' });
-  }
-}
-function requestNotif() {
-  if ('Notification' in window && Notification.permission === 'default') {
-    Notification.requestPermission();
-  }
-}
-
-// ── Timer tick ──
-function tick() {
-  remSec--;
-  updateDisplay();
-  if (remSec <= 0) {
-    clearInterval(timer);
-    running = false;
-    onPhaseEnd();
-  }
-}
+function tick() { remSec--; updateDisplay(); if (remSec <= 0) { clearInterval(timer); running = false; onPhaseEnd(); } }
 function onPhaseEnd() {
-  beep();
-  logSession();
-  const nextPhase = phase === 'work' ? 'break' : 'work';
-  notify(
-    nextPhase === 'break' ? '✓ Work session done!' : '✓ Break over!',
-    nextPhase === 'break' ? 'Time to take a break.' : 'Ready to focus again?'
-  );
-  switchPhase(nextPhase);
-  sub.textContent = 'done — start next?';
-  showBtn('start-btn','skip-btn');
-  $('extend-row').classList.add('hidden');
-  phaseDot.classList.remove('pulse');
-  lockSettings(false);
+  beep(); logSession();
+  const np = phase === 'work' ? 'break' : 'work';
+  notify(np === 'break' ? '✓ Session done!' : '✓ Break over!', np === 'break' ? 'Time to take a break.' : 'Ready to focus again?');
+  switchPhase(np); sub.textContent = 'done — start next?';
+  showBtn('start-btn','skip-btn'); $('extend-row').classList.add('hidden');
+  $('ring-wrap').classList.remove('active'); phaseDot.classList.remove('pulse'); lockSettings(false);
 }
-
-// ── Phase switch ──
 function switchPhase(p) {
   phase = p;
-  totalSec = (phase === 'work' ? parseInt(workInput.value) : parseInt(breakInput.value)) * 60;
-  remSec = totalSec;
-  setPhaseUI();
-  updateDisplay();
+  if (p === 'break') { prevWorkType = sessionType; prevWorkSubtype = sessionSubtype; sessionType = 'Break'; sessionSubtype = (subtypeMap['Break'] && subtypeMap['Break'][0]) || 'Short'; }
+  else { sessionType = prevWorkType; sessionSubtype = prevWorkSubtype; }
+  $('type-select').value = sessionType; populateSubtypes(sessionType); $('subtype-select').value = sessionSubtype;
+  durInput.value = sessionType === 'Break' ? breakMin : workMin;
+  $('dur-label').textContent = sessionType === 'Break' ? 'Break' : sessionType === 'Focus' ? 'Focus' : 'Chore';
+  totalSec = parseInt(durInput.value) * 60;
+  remSec = totalSec; setPhaseUI(); updateDisplay();
 }
 
-// ── Actions ──
 function handleStart() {
   requestNotif();
   if (!running && !paused) {
-    workMin  = parseInt(workInput.value)  || 30;
-    breakMin = parseInt(breakInput.value) || 5;
-    totalSec = (phase === 'work' ? workMin : breakMin) * 60;
-    remSec   = totalSec;
-    sessionStart = new Date();
-    updateDisplay();
+    const dv = parseInt(durInput.value)||30;
+    if (sessionType === 'Break') breakMin = dv; else workMin = dv;
+    phase = sessionType === 'Break' ? 'break' : 'work';
+    totalSec = dv * 60;
+    remSec = totalSec; sessionStart = new Date(); pausedMs = 0; pauseStarted = null; updateDisplay();
   }
-  running = true; paused = false;
-  timer = setInterval(tick, 1000);
-  sub.textContent = phase === 'work' ? 'focusing…' : 'resting…';
-  showBtn('pause-btn','skip-btn');
-  $('extend-row').classList.remove('hidden');
-  phaseDot.classList.add('pulse');
-  lockSettings(true);
+  running = true; paused = false; timer = setInterval(tick, 1000);
+  sub.textContent = sessionType === 'Break' ? 'resting…' : 'focusing…';
+  showBtn('pause-btn','stop-btn','skip-btn'); $('extend-row').classList.remove('hidden');
+  $('ring-wrap').classList.add('active'); phaseDot.classList.add('pulse'); lockSettings(true); setPhaseUI();
 }
 function handlePause() {
-  clearInterval(timer);
-  running = false; paused = true;
-  sub.textContent = 'paused';
-  showBtn('resume-btn','skip-btn');
-  $('extend-row').classList.remove('hidden');
-  phaseDot.classList.remove('pulse');
+  pauseStarted = new Date(); clearInterval(timer); running = false; paused = true;
+  sub.textContent = 'paused'; showBtn('resume-btn','stop-btn','skip-btn');
+  $('extend-row').classList.remove('hidden'); $('ring-wrap').classList.remove('active'); phaseDot.classList.remove('pulse');
 }
 function handleResume() {
-  running = true; paused = false;
-  timer = setInterval(tick, 1000);
-  sub.textContent = phase === 'work' ? 'focusing…' : 'resting…';
-  showBtn('pause-btn','skip-btn');
-  phaseDot.classList.add('pulse');
+  if (pauseStarted) { pausedMs += Date.now() - pauseStarted; pauseStarted = null; }
+  running = true; paused = false; timer = setInterval(tick, 1000);
+  sub.textContent = sessionType === 'Break' ? 'resting…' : 'focusing…';
+  showBtn('pause-btn','stop-btn','skip-btn'); $('ring-wrap').classList.add('active'); phaseDot.classList.add('pulse'); setPhaseUI();
+}
+function handleStop() {
+  clearInterval(timer);
+  if (pauseStarted) { pausedMs += Date.now() - pauseStarted; pauseStarted = null; }
+  running = false; paused = false;
+  if (!sessionStart) { handleReset(); return; }
+  logSession();
+  totalSec = parseInt(durInput.value) * 60;
+  remSec = totalSec; setPhaseUI(); updateDisplay(); sub.textContent = 'ready'; showBtn('start-btn');
+  $('extend-row').classList.add('hidden'); $('ring-wrap').classList.remove('active'); phaseDot.classList.remove('pulse'); lockSettings(false);
 }
 function handleReset() {
-  clearInterval(timer);
-  running = false; paused = false;
-  phase = 'work';
-  workInput.value  = workMin  || 30;
-  breakInput.value = breakMin || 5;
-  totalSec = parseInt(workInput.value) * 60;
-  remSec   = totalSec;
-  setPhaseUI();
-  updateDisplay();
-  sub.textContent = 'ready';
-  showBtn('start-btn');
-  $('extend-row').classList.add('hidden');
-  phaseDot.classList.remove('pulse');
-  lockSettings(false);
+  clearInterval(timer); running = false; paused = false; pausedMs = 0; pauseStarted = null;
+  durInput.value = sessionType === 'Break' ? (breakMin||5) : (workMin||30);
+  totalSec = parseInt(durInput.value) * 60;
+  remSec = totalSec; setPhaseUI(); updateDisplay(); sub.textContent = 'ready'; showBtn('start-btn');
+  $('extend-row').classList.add('hidden'); $('ring-wrap').classList.remove('active'); phaseDot.classList.remove('pulse'); lockSettings(false);
 }
 function handleSkip() {
-  clearInterval(timer);
-  running = false; paused = false;
-  const nextPhase = phase === 'work' ? 'break' : 'work';
-  switchPhase(nextPhase);
-  sub.textContent = 'ready';
-  showBtn('start-btn','skip-btn');
-  $('extend-row').classList.add('hidden');
-  phaseDot.classList.remove('pulse');
-  lockSettings(false);
+  clearInterval(timer); running = false; paused = false; pausedMs = 0; pauseStarted = null;
+  switchPhase(phase === 'work' ? 'break' : 'work'); sub.textContent = 'ready'; showBtn('start-btn','skip-btn');
+  $('extend-row').classList.add('hidden'); $('ring-wrap').classList.remove('active'); phaseDot.classList.remove('pulse'); lockSettings(false);
 }
-function extendTimer(mins) {
-  remSec   += mins * 60;
-  totalSec += mins * 60;
-  updateDisplay();
+function extendTimer(m) { remSec += m*60; totalSec += m*60; updateDisplay(); }
+function adjustDur(delta) {
+  const max = sessionType === 'Break' ? 60 : 120;
+  const val = Math.min(max, Math.max(1, (parseInt(durInput.value)||0) + delta));
+  durInput.value = val;
+  if (sessionType === 'Break') breakMin = val; else workMin = val;
+  if (!running && !paused) { totalSec = val*60; remSec = totalSec; updateDisplay(); }
 }
-function adjustDur(type, delta) {
-  const inp = type === 'work' ? workInput : breakInput;
-  const max = type === 'work' ? 120 : 60;
-  const val = Math.min(max, Math.max(1, (parseInt(inp.value) || 0) + delta));
-  inp.value = val;
-  if (!running && !paused) {
-    if ((type === 'work' && phase === 'work') || (type === 'break' && phase === 'break')) {
-      totalSec = val * 60; remSec = totalSec; updateDisplay();
-    }
-  }
-}
-
-// ── Input live sync ──
-workInput.addEventListener('input', () => {
-  if (!running && !paused && phase === 'work') {
-    const v = parseInt(workInput.value) || 30;
-    totalSec = v * 60; remSec = totalSec; updateDisplay();
-  }
-});
-breakInput.addEventListener('input', () => {
-  if (!running && !paused && phase === 'break') {
-    const v = parseInt(breakInput.value) || 5;
-    totalSec = v * 60; remSec = totalSec; updateDisplay();
-  }
+durInput.addEventListener('input', () => {
+  const v = parseInt(durInput.value)||30;
+  if (sessionType === 'Break') breakMin = v; else workMin = v;
+  if (!running && !paused) { totalSec = v*60; remSec = totalSec; updateDisplay(); }
 });
 
-// ── Log ──
+function migrateSession(s) {
+  if (!s.type) { s.type = s.phase === 'break' ? 'Break' : 'Focus'; s.subtype = s.phase === 'break' ? 'Short' : 'General'; }
+  if (s.pausedMs === undefined) s.pausedMs = 0;
+  return s;
+}
+
 function logSession() {
-  const end   = new Date();
-  const start = sessionStart || end;
-  const dur   = Math.round((end - start) / 60000);
-  const label = taskInput.value.trim() || (phase === 'work' ? 'Focus session' : 'Break');
-  sessions.unshift({ phase, label, start, end, dur });
-  saveLog();
-  renderLog();
+  editingIndex = null;
+  const end = new Date(), start = sessionStart || end;
+  const dur = Math.max(0, Math.round((end - start - pausedMs) / 60000));
+  const label = taskInput.value.trim() || `${sessionType} — ${sessionSubtype}`;
+  sessions.unshift({ type: sessionType, subtype: sessionSubtype, phase: sessionType === 'Break' ? 'break' : 'work', label, start, end, dur, pausedMs });
+  pausedMs = 0; pauseStarted = null; saveLog(); renderLog();
 }
+
 function renderLog() {
-  const list = $('log-list');
+  const list = $('log-list'), label = $('log-section-label');
   if (!sessions.length) {
-    list.innerHTML = `<div class="log-empty"><span class="icon">◎</span>Start your first session.<br>Your focus history will appear here.</div>`;
-    updateSummary(); return;
+    list.innerHTML = `<div class="log-empty"><span class="empty-icon">◎</span>Start your first session.<br>History appears here.</div>`;
+    label.style.display = 'none'; updateSummary(); return;
   }
-  list.innerHTML = sessions.map(s => {
-    const chipClass = s.phase === 'work' ? 'work' : 'brk';
-    const chipTxt   = s.phase === 'work' ? 'Work' : 'Break';
-    const startFmt  = s.start.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
-    const endFmt    = s.end.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+  label.style.display = 'block';
+  list.innerHTML = sessions.map((s, i) => {
+    if (i === editingIndex) {
+      const tOpts = ['Focus','Chore','Break'].map(t => `<option value="${t}"${t===s.type?' selected':''}>${t}</option>`).join('');
+      const sOpts = (subtypeMap[s.type]||[]).map(st => `<option value="${st}"${st===s.subtype?' selected':''}>${st}</option>`).join('');
+      return `<div class="log-item editing">
+        <div class="li-edit-row">
+          <select class="type-select" id="edit-type-${i}" onchange="populateEditSubtypes(${i},this.value)">${tOpts}</select>
+          <select class="type-select" id="edit-subtype-${i}">${sOpts}</select>
+        </div>
+        <input class="li-edit-input" id="edit-label-${i}" type="text" value="${s.label.replace(/"/g,'&quot;').replace(/</g,'&lt;')}">
+        <div class="li-edit-actions">
+          <button class="btn primary" onclick="saveEditSession(${i})">Save</button>
+          <button class="btn ghost" onclick="cancelEdit()">Cancel</button>
+        </div>
+      </div>`;
+    }
+    const cc = s.type === 'Focus' ? 'work' : s.type === 'Chore' ? 'chore' : 'brk';
+    const st = s.start.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
+    const en = s.end.toLocaleTimeString([], {hour:'2-digit',minute:'2-digit'});
     return `<div class="log-item">
-      <span class="li-chip ${chipClass}">${chipTxt}</span>
+      <span class="li-chip ${cc}">${s.type}</span>
       <div class="li-info">
         <div class="li-name">${s.label}</div>
-        <div class="li-time">${startFmt} → ${endFmt}</div>
+        <div class="li-meta"><span>${s.subtype}</span><span class="li-meta-dot">·</span><span>${st} → ${en}</span></div>
       </div>
       <div class="li-right">
         <div class="li-dur">${s.dur}m</div>
+        <button class="li-edit-btn" onclick="startEditSession(${i})" title="Edit">✏</button>
       </div>
     </div>`;
   }).join('');
   updateSummary();
 }
-function updateSummary() {
-  const workSessions = sessions.filter(s => s.phase === 'work');
-  const totalFocus   = workSessions.reduce((a, s) => a + s.dur, 0);
-  const hrs = Math.floor(totalFocus / 60);
-  const min = totalFocus % 60;
-  $('sum-focus').textContent  = hrs > 0 ? `${hrs}h ${min}m` : `${min}m`;
-  $('sum-count').textContent  = workSessions.length;
-  $('sum-breaks').textContent = sessions.filter(s => s.phase === 'break').length;
+
+function startEditSession(i) { editingIndex = i; renderLog(); }
+function cancelEdit() { editingIndex = null; renderLog(); }
+function populateEditSubtypes(i, type) {
+  const sel = $('edit-subtype-'+i); if (!sel) return;
+  sel.innerHTML = (subtypeMap[type]||[]).map(st => `<option value="${st}">${st}</option>`).join('');
 }
-function clearLog() {
-  sessions = []; saveLog(); renderLog();
+function saveEditSession(i) {
+  const s = sessions[i];
+  s.type = $('edit-type-'+i).value; s.subtype = $('edit-subtype-'+i).value;
+  s.label = $('edit-label-'+i).value.trim() || `${s.type} — ${s.subtype}`;
+  s.phase = s.type === 'Break' ? 'break' : 'work';
+  editingIndex = null; saveLog(); renderLog();
 }
+
+function updateSummary() { renderFocusSummary(); renderStatsBlock(); }
+
+function renderFocusSummary() {
+  const el = $('focus-summary');
+  const fs = sessions.filter(s => s.type === 'Focus');
+  if (!fs.length) { el.innerHTML = ''; return; }
+  const by = {};
+  fs.forEach(s => { by[s.subtype] = (by[s.subtype]||0) + s.dur; });
+  const focusOrder = subtypeMap['Focus'] || [];
+  const sortedSubs = Object.keys(by).sort((a,b) => {
+    const ai = focusOrder.indexOf(a), bi = focusOrder.indexOf(b);
+    if (ai === -1 && bi === -1) return a.localeCompare(b);
+    if (ai === -1) return 1; if (bi === -1) return -1;
+    return ai - bi;
+  });
+  el.innerHTML = sortedSubs.map(sub =>
+    `<div class="fs-card"><div class="fs-label">${sub}</div><div class="fs-val">${fmtMin(by[sub])}</div></div>`
+  ).join('');
+}
+
+function renderStatsBlock() {
+  const block = $('stats-block');
+  if (!sessions.length) { block.innerHTML = ''; return; }
+  const grouped = {};
+  sessions.forEach(s => {
+    if (!grouped[s.type]) grouped[s.type] = {};
+    if (!grouped[s.type][s.subtype]) grouped[s.type][s.subtype] = { dur:0, count:0 };
+    grouped[s.type][s.subtype].dur   += s.dur;
+    grouped[s.type][s.subtype].count += 1;
+  });
+  const TYPE_ORDER = ['Focus','Break','Chore'];
+  const colorClass = t => t === 'Focus' ? 'work-color' : t === 'Break' ? 'break-color' : 'chore-color';
+  const sortedTypes = TYPE_ORDER.filter(t => grouped[t]);
+  block.innerHTML = sortedTypes.map(type => {
+    const subs = grouped[type];
+    const tot = Object.values(subs).reduce((a,v)=>a+v.dur,0);
+    const cnt = Object.values(subs).reduce((a,v)=>a+v.count,0);
+    // sort subtypes: for Focus use defined order, others alphabetical
+    const subOrder = type === 'Focus' ? (subtypeMap['Focus'] || []) : [];
+    const sortedSubs = Object.keys(subs).sort((a,b) => {
+      const ai = subOrder.indexOf(a), bi = subOrder.indexOf(b);
+      if (ai === -1 && bi === -1) return a.localeCompare(b);
+      if (ai === -1) return 1;
+      if (bi === -1) return -1;
+      return ai - bi;
+    });
+    const cards = sortedSubs.map(sub => {
+      const d = subs[sub];
+      return `<div class="sb-card">
+        <div class="sb-card-label">${sub}</div>
+        <div class="sb-card-val ${colorClass(type)}">${fmtMin(d.dur)}</div>
+        <div class="sb-card-count">${d.count}\u00d7</div>
+      </div>`;
+    }).join('');
+    return `<div class="sb-group">
+      <div class="sb-group-header">
+        <span class="sb-group-type">${type}</span>
+        <span class="sb-group-divider"></span>
+        <span class="sb-group-total">${fmtMin(tot)} \u00b7 ${cnt}\u00d7</span>
+      </div>
+      <div class="sb-cards">${cards}</div>
+    </div>`;
+  }).join('');
+}
+
+function clearLog() { sessions = []; saveLog(); renderLog(); }
 function saveLog() {
   try {
     const today = new Date().toDateString();
-    const all   = JSON.parse(localStorage.getItem('focus-log') || '{}');
-    all[today]  = sessions.map(s => ({...s, start: s.start.toISOString(), end: s.end.toISOString()}));
+    const all = JSON.parse(localStorage.getItem('focus-log')||'{}');
+    all[today] = sessions.map(s => ({...s, start: s.start.toISOString(), end: s.end.toISOString()}));
     localStorage.setItem('focus-log', JSON.stringify(all));
   } catch(e) {}
 }
 function loadLog() {
   try {
     const today = new Date().toDateString();
-    const all   = JSON.parse(localStorage.getItem('focus-log') || '{}');
-    sessions = (all[today] || []).map(s => ({...s, start: new Date(s.start), end: new Date(s.end)}));
+    const all = JSON.parse(localStorage.getItem('focus-log')||'{}');
+    sessions = (all[today]||[]).map(s => ({...migrateSession({...s}), start: new Date(s.start), end: new Date(s.end)}));
     renderLog();
   } catch(e) {}
 }
 
-// ── Theme ──
+function copyMarkdown() {
+  if (!sessions.length) { showToast('No sessions yet'); return; }
+  const rows = [...sessions].reverse().map(s => {
+    const st = s.start.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    const en = s.end.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'});
+    return `| ${s.type} | ${s.subtype} | ${s.label.replace(/\|/g,'\\|')} | ${st} | ${en} | ${s.dur}m |`;
+  });
+  const md = ['| Type | Subtype | Label | Start | End | Duration |','|------|---------|-------|-------|-----|----------|',...rows].join('\n');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(md).then(() => showToast('Copied!')).catch(() => fallbackCopy(md));
+  } else { fallbackCopy(md); }
+}
+function fallbackCopy(text) {
+  try {
+    const ta = document.createElement('textarea');
+    ta.value = text; ta.style.cssText = 'position:fixed;opacity:0;top:0;left:0';
+    document.body.appendChild(ta); ta.select(); document.execCommand('copy');
+    document.body.removeChild(ta); showToast('Copied!');
+  } catch(e) { showToast('Copy failed'); }
+}
+function showToast(msg) {
+  const t = $('toast'); t.textContent = msg;
+  t.classList.remove('hidden'); t.classList.add('show');
+  setTimeout(() => { t.classList.remove('show'); setTimeout(() => t.classList.add('hidden'), 200); }, 2000);
+}
+
 function toggleTheme() {
-  const html = document.documentElement;
-  const dark = html.getAttribute('data-theme') === 'dark';
+  const html = document.documentElement, dark = html.getAttribute('data-theme') === 'dark';
   html.setAttribute('data-theme', dark ? 'light' : 'dark');
-  $('icon-sun').classList.toggle('hidden', !dark);
-  $('icon-moon').classList.toggle('hidden', dark);
+  $('icon-sun').classList.toggle('hidden', !dark); $('icon-moon').classList.toggle('hidden', dark);
   try { localStorage.setItem('focus-theme', dark ? 'light' : 'dark'); } catch(e) {}
 }
 function initTheme() {
@@ -911,12 +822,8 @@ function initTheme() {
   $('icon-moon').classList.toggle('hidden', theme === 'light');
 }
 
-// ── Init ──
-initTheme();
-loadLog();
-updateDisplay();
-setPhaseUI();
-showBtn('start-btn');
+initTheme(); initSubtypes(); populateSubtypes('Focus');
+loadLog(); updateDisplay(); setPhaseUI(); showBtn('start-btn');
 $('reset-btn').classList.remove('hidden');
 </script>
 </body>
